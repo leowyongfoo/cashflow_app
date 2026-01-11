@@ -1,5 +1,7 @@
 import 'package:cashflow_app/data/repositories/cash_record_repository_local.dart';
 import 'package:cashflow_app/data/repositories/cash_record_repsitory.dart';
+import 'package:cashflow_app/data/services/local/local_data_service.dart';
+import 'package:cashflow_app/ui/cash_record/view_models/cash_record_viewmodel.dart';
 import 'package:cashflow_app/ui/home/view_models/home_viewmodel.dart';
 import 'package:cashflow_app/ui/home/widgets/home_page.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +11,13 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
+        Provider(create: (context) => LocalDataService(),
+        ),
         Provider(create: (context) =>
-            CashRecordRepositoryLocal() as CashRecordRepository,
+            CashRecordRepositoryLocal(localDataService: context.read()) as CashRecordRepository,
+        ),
+        Provider(create: (context) =>
+            CashRecordViewModel(cashRecordRepository: context.read()),
         ),
         ChangeNotifierProvider(create: (context) =>
             HomeViewModel(cashRecordRepository: context.read()),
@@ -35,7 +42,7 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/': (context) {
-          return HomePage(homeViewModel: context.read<HomeViewModel>());
+          return HomePage(homeViewModel: context.read());
         }
       },
     );

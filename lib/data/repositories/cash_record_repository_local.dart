@@ -1,17 +1,26 @@
 import 'package:cashflow_app/data/models/cash_record/cash_record.dart';
 import 'package:cashflow_app/data/repositories/cash_record_repsitory.dart';
 
+import '../services/local/local_data_service.dart';
+
 class CashRecordRepositoryLocal implements CashRecordRepository {
+
+  CashRecordRepositoryLocal({required LocalDataService localDataService})
+      : _localDataService = localDataService;
+
+  final LocalDataService _localDataService;
+  List<CashRecord> _cashRecords = [];
+
   @override
   Future<List<CashRecord>> readCashRecords() async {
-    return [
-      CashRecord(
-        id: 1,
-        remark: 'Mock data 1',
-        amount: '1.00',
-        date: '10/1/2026'
-      )
-    ];
+    //_cashRecords = await _localDataService.getCashRecords();
+    return _cashRecords;
+  }
+
+  @override
+  Future<void> createCashRecord(CashRecord cashRecord) async {
+    CashRecord result  = await _localDataService.insertCashRecord(cashRecord: cashRecord);
+    _cashRecords.add(result);
   }
 
 }

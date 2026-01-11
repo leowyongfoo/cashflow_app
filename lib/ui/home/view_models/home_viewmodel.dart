@@ -13,12 +13,13 @@ class HomeViewModel extends ChangeNotifier{
   List<CashRecord> _cashRecords = [];
   List<CashRecord> get cashRecords => _cashRecords;
 
-  bool _isLoading = false;
+  bool _isLoading = true;
   bool get isLoading => _isLoading;
 
   Future<void> readCashRecords() async {
     try{
       _cashRecords = await _cashRecordRepository.readCashRecords();
+      _isLoading = false;
     } finally {
       notifyListeners();
     }

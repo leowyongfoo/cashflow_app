@@ -1,3 +1,4 @@
+import 'package:cashflow_app/ui/cash_record/view_models/cash_record_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -5,7 +6,8 @@ import '../../../data/models/cash_record/cash_record.dart';
 import '../../core/ui/text_form_field.dart';
 
 class CashRecordPage extends StatefulWidget {
-  const CashRecordPage({super.key});
+  final CashRecordViewModel viewModel;
+  const CashRecordPage({super.key, required this.viewModel});
 
   @override
   State<CashRecordPage> createState() => _CashRecordPageState();
@@ -24,6 +26,15 @@ class _CashRecordPageState extends State<CashRecordPage> {
     // TODO: implement initState
     super.initState();
     dateController.text = formatDate(DateTime.now());
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    amountController.dispose();
+    remarkController.dispose();
+    dateController.dispose();
   }
 
   @override
@@ -53,29 +64,17 @@ class _CashRecordPageState extends State<CashRecordPage> {
                 onTap: _selectDate,
               ),
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   final data = CashRecord(
                     remark: remarkController.text,
                     amount: amountController.text,
+                    date: dateController.text,
                   );
-                  setState(() {
-                    cashRecords.add(data);
-                  });
+                  await widget.viewModel.addCashRecords(cashRecord: data);
+                  Navigator.of(context).pop();
                 },
                 child: Text('Add'),
               ),
-              cashRecords.isNotEmpty ?
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: cashRecords.length,
-                itemBuilder: (context, index) => Card(
-                  elevation: 1.0,
-                  child: ListTile(
-                    title: Text('RM ${double.parse(cashRecords[index].amount ?? '0.00').toStringAsFixed(2)}'),
-                    subtitle: Text(cashRecords[index].remark ?? ''),
-                  ),
-                ),
-              ) : SizedBox.shrink()
             ],
           ),
         ),

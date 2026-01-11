@@ -21,8 +21,7 @@ class _HomePageState extends State<HomePage> {
       widget.homeViewModel.readCashRecords();
     });
   }
-
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,17 +29,25 @@ class _HomePageState extends State<HomePage> {
         title: Text('Cash flow app'),
       ),
       floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute<void>(
-              builder: (context) => const CashRecordPage(),
+            MaterialPageRoute(
+              builder: (context) => CashRecordPage(viewModel: context.read()),
             ),
-          );
+          ).then((_) {
+            widget.homeViewModel.readCashRecords();
+          });
         },
       ),
       body: Consumer<HomeViewModel>(
         builder: (context, viewModel, child) {
+          if(viewModel.isLoading){
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
           return ListView.builder(
             shrinkWrap: true,
             itemCount: viewModel.cashRecords.length,
